@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
-import { 
-  Plus, 
-  MessageSquare, 
-  Pin, 
-  Trash2, 
-  Edit2, 
-  Search, 
-  ChevronLeft, 
-  Check, 
-  Code, 
-  Brain, 
-  Bug, 
-  Server, 
-  Calculator, 
+import {
+  PenSquare,
+  MessageSquare,
+  Pin,
+  Trash2,
+  Pencil,
+  Search,
+  ChevronLeft,
+  Check,
+  Code2,
+  Brain,
+  Bug,
+  Server,
+  Sigma,
   Database
 } from 'lucide-react';
 import type { ChatSession, StudentPreset } from '../types';
 import { STUDENT_PRESETS } from '../constants/presets';
+import { WiseMark } from './brand/WiseLogo';
 
 interface SidebarProps {
   sessions: ChatSession[];
@@ -69,113 +70,112 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const getPresetIcon = (iconName: string) => {
+    const cls = 'w-4 h-4 shrink-0 text-ink-muted group-hover:text-accent-soft transition-colors';
     switch (iconName) {
-      case 'Brain': return <Brain className="w-3.5 h-3.5 text-zinc-400" />;
-      case 'Bug': return <Bug className="w-3.5 h-3.5 text-zinc-400" />;
-      case 'Server': return <Server className="w-3.5 h-3.5 text-zinc-400" />;
-      case 'Calculator': return <Calculator className="w-3.5 h-3.5 text-zinc-400" />;
-      case 'Database': return <Database className="w-3.5 h-3.5 text-zinc-400" />;
-      default: return <Code className="w-3.5 h-3.5 text-zinc-400" />;
+      case 'Brain': return <Brain className={cls} />;
+      case 'Bug': return <Bug className={cls} />;
+      case 'Server': return <Server className={cls} />;
+      case 'Calculator': return <Sigma className={cls} />;
+      case 'Database': return <Database className={cls} />;
+      default: return <Code2 className={cls} />;
     }
   };
 
   return (
     <>
       {isOpen && (
-        <div 
+        <div
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/55 backdrop-blur-md md:hidden"
         />
       )}
 
       <aside className={`
         fixed md:static inset-y-0 left-0 z-50
-        w-64 bg-[#09090b] border-r border-zinc-800/60 flex flex-col justify-between
-        transition-transform duration-200 ease-in-out
+        w-[280px] shrink-0 wise-rail flex flex-col
+        transition-transform duration-300 ease-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <div className="p-3 border-b border-zinc-800/60 space-y-2.5">
-          <div className="flex items-center justify-between">
+        <div className="px-5 pt-5 pb-4 space-y-4">
+          <div className="flex items-center gap-2">
             <button
               onClick={onNewChat}
-              className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-medium rounded-lg transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-[13px] font-medium text-ink wise-panel-flat"
             >
-              <Plus className="w-3.5 h-3.5 text-zinc-400" />
-              <span>New Chat</span>
+              <PenSquare className="w-4 h-4 text-ink-muted" />
+              <span>New chat</span>
             </button>
             <button
               onClick={onClose}
-              className="md:hidden ml-2 p-1.5 text-zinc-400 hover:text-white rounded-md hover:bg-zinc-800"
+              className="md:hidden p-2.5 text-ink-muted hover:text-ink rounded-xl hover:bg-white/[0.05]"
+              aria-label="Close sidebar"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
           </div>
 
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-zinc-500" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint pointer-events-none" />
             <input
               type="text"
-              placeholder="Search history..."
+              placeholder="Search conversations"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-800/80 text-zinc-200 text-xs rounded-md pl-8 pr-2.5 py-1.5 focus:outline-none focus:border-zinc-700 placeholder-zinc-600"
+              className="w-full bg-white/[0.03] text-ink text-[13px] rounded-xl pl-10 pr-3 py-2.5 border-0 focus:outline-none focus:bg-white/[0.06] placeholder-ink-faint transition-colors"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-2.5 space-y-4 text-xs">
-          <div>
-            <div className="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-              Shortcuts
-            </div>
-            <div className="grid grid-cols-1 gap-1">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 pb-4 space-y-7">
+          <section className="space-y-2">
+            <h2 className="px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
+              Starting points
+            </h2>
+            <div className="space-y-0.5">
               {STUDENT_PRESETS.map((preset) => (
                 <button
                   key={preset.id}
                   onClick={() => onSelectPreset(preset)}
-                  className="flex items-center space-x-2 p-1.5 rounded-md hover:bg-zinc-900 border border-transparent hover:border-zinc-800/80 text-left transition-all group"
+                  title={preset.description}
+                  className="group w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl hover:bg-white/[0.04] text-left transition-colors"
                 >
                   {getPresetIcon(preset.icon)}
-                  <span className="text-xs text-zinc-300 group-hover:text-zinc-100 truncate font-medium">
+                  <span className="text-[13px] text-ink-soft group-hover:text-ink truncate">
                     {preset.title}
                   </span>
                 </button>
               ))}
             </div>
-          </div>
+          </section>
 
-          <hr className="border-zinc-800/60" />
-
-          <div>
-            <div className="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-              Chats ({sessions.length})
-            </div>
+          <section className="space-y-2">
+            <h2 className="px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
+              Conversations
+            </h2>
 
             {pinnedSessions.length > 0 && (
-              <div className="mb-2 space-y-0.5">
-                <span className="text-[10px] font-medium text-zinc-400 px-2 flex items-center space-x-1">
-                  <Pin className="w-2.5 h-2.5 text-zinc-400" />
-                  <span>Pinned</span>
-                </span>
+              <div className="space-y-0.5 pb-2">
                 {pinnedSessions.map(s => renderSessionItem(s))}
               </div>
             )}
 
             <div className="space-y-0.5">
               {unpinnedSessions.length === 0 && pinnedSessions.length === 0 ? (
-                <p className="text-xs text-zinc-500 text-center py-4">
-                  No conversations
+                <p className="text-[13px] text-ink-faint px-2.5 py-3">
+                  Nothing here yet.
                 </p>
               ) : (
                 unpinnedSessions.map(s => renderSessionItem(s))
               )}
             </div>
-          </div>
+          </section>
         </div>
 
-        <div className="p-3 border-t border-zinc-800/60 bg-zinc-950/40 text-xs text-zinc-500 flex items-center justify-between">
-          <span>House of Wise</span>
-          <span className="text-[10px] font-mono text-zinc-600">v2.5</span>
+        <div className="px-5 py-5 flex items-center gap-2.5 text-ink-faint">
+          <WiseMark className="h-5 opacity-80" />
+          <span className="font-display text-[10px] uppercase tracking-[0.18em]">
+            House of Wise
+          </span>
         </div>
       </aside>
     </>
@@ -190,54 +190,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
         key={s.id}
         onClick={() => onSelectSession(s.id)}
         className={`
-          group relative flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-all
-          ${isActive 
-            ? 'bg-zinc-800 text-zinc-100' 
-            : 'text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200'}
+          group relative flex items-center justify-between gap-1 px-2.5 py-2.5 rounded-xl text-[13px] cursor-pointer transition-colors
+          ${isActive
+            ? 'bg-white/[0.07] text-ink'
+            : 'text-ink-soft hover:bg-white/[0.035] hover:text-ink'}
         `}
       >
-        <div className="flex items-center space-x-2 min-w-0 flex-1">
-          <MessageSquare className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-zinc-200' : 'text-zinc-500'}`} />
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {s.isPinned ? (
+            <Pin className="w-4 h-4 shrink-0 text-accent-soft" />
+          ) : (
+            <MessageSquare className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent-soft' : 'text-ink-faint'}`} />
+          )}
           {isEditing ? (
-            <form onSubmit={(e) => saveRename(s.id, e)} className="flex-1 flex items-center space-x-1" onClick={e => e.stopPropagation()}>
+            <form onSubmit={(e) => saveRename(s.id, e)} className="flex-1 flex items-center gap-1" onClick={e => e.stopPropagation()}>
               <input
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
                 autoFocus
-                className="w-full bg-zinc-950 text-white text-xs px-1.5 py-0.5 rounded border border-zinc-600 focus:outline-none"
+                className="w-full bg-white/[0.06] text-ink text-[13px] px-2 py-1 rounded-lg border-0 focus:outline-none"
               />
-              <button type="submit" className="text-emerald-400 p-0.5">
-                <Check className="w-3.5 h-3.5" />
+              <button type="submit" className="text-accent-soft p-1" aria-label="Save title">
+                <Check className="w-4 h-4" />
               </button>
             </form>
           ) : (
-            <span className="truncate">{s.title || 'Untitled Conversation'}</span>
+            <span className="truncate">{s.title || 'Untitled'}</span>
           )}
         </div>
 
         {!isEditing && (
-          <div className="hidden group-hover:flex items-center space-x-1 shrink-0 ml-1">
+          <div className="hidden group-hover:flex items-center gap-0.5 shrink-0">
             <button
               onClick={(e) => { e.stopPropagation(); onPinSession(s.id); }}
-              className="p-1 text-zinc-500 hover:text-zinc-300"
+              className="p-1.5 text-ink-faint hover:text-ink rounded-lg hover:bg-white/[0.06]"
               title={s.isPinned ? 'Unpin' : 'Pin'}
             >
-              <Pin className="w-3 h-3" />
+              <Pin className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={(e) => startRename(s, e)}
-              className="p-1 text-zinc-500 hover:text-zinc-300"
+              className="p-1.5 text-ink-faint hover:text-ink rounded-lg hover:bg-white/[0.06]"
               title="Rename"
             >
-              <Edit2 className="w-3 h-3" />
+              <Pencil className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onDeleteSession(s.id); }}
-              className="p-1 text-zinc-500 hover:text-rose-400"
+              className="p-1.5 text-ink-faint hover:text-rose-300 rounded-lg hover:bg-white/[0.06]"
               title="Delete"
             >
-              <Trash2 className="w-3 h-3" />
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
         )}

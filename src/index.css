@@ -1,46 +1,103 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
 
+/*
+  House of Wise — design tokens.
+  The shell is a warm charcoal grey rather than black, so panels can sit above it
+  and wells can sit below it. One signature accent (orchid violet, lifted from the
+  centre of the logo gradient) carries every interactive state; the full brand
+  gradient is kept for the logo and for the moments where the AI itself is acting.
+*/
+@theme {
+  /* Greys, faintly violet so they sit under the brand gradient */
+  --color-well: #16151B;      /* recessed: code blocks, sandbox panes */
+  --color-canvas: #201E26;    /* the shell */
+  --color-surface: #2A2833;   /* panels and dialogs */
+  --color-raised: #343141;    /* hover and elevated states */
+  --color-overlay: #3D3A4A;
+
+  /* Warm off-whites — never pure #fff */
+  --color-ink: #F4EFE9;
+  --color-ink-soft: #CFC8BF;
+  --color-ink-muted: #A59D93;
+  --color-ink-faint: #857E75;
+
+  /* Signature accent */
+  --color-accent: #B86AD9;
+  --color-accent-soft: #D9AEEE;
+  --color-accent-deep: #8E4FB0;
+
+  /* Hairlines instead of borders */
+  --color-hairline: rgba(244, 239, 233, 0.08);
+  --color-hairline-strong: rgba(244, 239, 233, 0.15);
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-panel: 1.25rem;
+}
+
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --primary: 252 87% 62%;
-    --primary-hover: 252 87% 55%;
-    --sidebar-bg: 240 5% 96%;
-    --card-bg: 0 0% 98%;
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background-color: var(--color-canvas);
   }
 
-  .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    --primary: 252 87% 65%;
-    --primary-hover: 252 87% 72%;
-    --sidebar-bg: 240 6% 8%;
-    --card-bg: 240 6% 11%;
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    overflow-x: hidden;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+
+    /* Light pools from the top so the shell reads as lit, not flat */
+    background-color: var(--color-canvas);
+    background-image:
+      radial-gradient(120% 78% at 50% -12%, rgba(184, 106, 217, 0.10) 0%, transparent 58%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, transparent 42%);
+    background-attachment: fixed;
+  }
+
+  /* A whisper of grain keeps the large grey areas from banding */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.032;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: rgba(184, 106, 217, 0.32);
+    color: var(--color-ink);
+  }
+
+  /* Focus rings use the signature accent, never a browser default */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  img {
+    -webkit-user-drag: none;
   }
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #0d0e12;
-  color: #f3f4f6;
-  overflow-x: hidden;
-}
-
-#root {
-  width: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-/* Custom scrollbars */
+/* Quiet scrollbars — they should read as a hint, not a control */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -48,34 +105,21 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(244, 239, 233, 0.12);
+  border: 3px solid transparent;
+  background-clip: content-box;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(244, 239, 233, 0.24);
+  background-clip: content-box;
 }
 
-/* Glassmorphism helpers */
-.glass-panel {
-  background: rgba(18, 19, 26, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.scrollbar-none {
+  scrollbar-width: none;
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(168, 85, 247, 0.3);
-}
-
-/* Code block styles */
-pre code {
-  font-family: 'Fira Code', 'JetBrains Mono', Consolas, Monaco, monospace;
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

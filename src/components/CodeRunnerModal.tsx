@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Play, Copy, Check, Terminal, RefreshCw } from 'lucide-react';
+import { X, Play, Copy, Check, RefreshCw } from 'lucide-react';
+import { WiseMark } from './brand/WiseLogo';
 
 interface CodeRunnerModalProps {
   isOpen: boolean;
@@ -87,83 +88,91 @@ Status: Code structure verified. Ready for deployment.`);
   const isHtml = language.toLowerCase() === 'html' || code.trim().startsWith('<');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-      <div className="relative w-full max-w-4xl h-[85vh] flex flex-col bg-[#0f1017] border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden text-white">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800 bg-zinc-950/80">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-emerald-400">
-              <Terminal className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white flex items-center space-x-2">
-                <span>Wise Interactive Sandbox</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono font-bold uppercase border border-emerald-500/20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-lg">
+      <div className="wise-dialog relative w-full max-w-4xl h-[85vh] flex flex-col rounded-[26px] overflow-hidden wise-fade-in">
+
+        <div className="flex items-center justify-between gap-4 px-7 pt-6 pb-5">
+          <div className="flex items-center gap-3 min-w-0">
+            <WiseMark className="h-6" />
+            <div className="min-w-0">
+              <h2 className="font-display text-[17px] font-semibold tracking-tight text-ink flex items-center gap-2.5">
+                <span>Sandbox</span>
+                <span className="px-2 py-0.5 rounded-md bg-white/[0.06] text-[10px] font-mono uppercase tracking-[0.1em] text-ink-muted">
                   {language}
                 </span>
-              </h3>
-              <p className="text-[11px] text-zinc-400">Instant code compilation & runtime output</p>
+              </h2>
+              <p className="text-[12px] text-ink-muted mt-0.5">Run a snippet and read the output side by side</p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={runSnippet}
               disabled={isRunning}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all shadow-md shadow-emerald-600/20"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium wise-send disabled:opacity-60"
             >
-              {isRunning ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-white" />}
-              <span>{isRunning ? 'Running...' : 'Re-Run Code'}</span>
+              {isRunning ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+              <span>{isRunning ? 'Running' : 'Run again'}</span>
             </button>
-            <button onClick={copyCode} className="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800">
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            <button
+              onClick={copyCode}
+              className="p-2.5 text-ink-muted hover:text-ink rounded-xl hover:bg-white/[0.06] transition-colors"
+              title="Copy source"
+            >
+              {copied ? <Check className="w-[18px] h-[18px] text-accent-soft" /> : <Copy className="w-[18px] h-[18px]" />}
             </button>
-            <button onClick={onClose} className="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800">
-              <X className="w-5 h-5" />
+            <button
+              onClick={onClose}
+              className="p-2.5 text-ink-muted hover:text-ink rounded-xl hover:bg-white/[0.06] transition-colors"
+              aria-label="Close sandbox"
+            >
+              <X className="w-[18px] h-[18px]" />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-800 overflow-hidden">
-          <div className="flex flex-col bg-[#0c0d13] overflow-hidden">
-            <div className="px-4 py-2 bg-zinc-900/60 border-b border-zinc-800/80 text-xs font-semibold text-zinc-400 flex items-center justify-between">
-              <span>Source Code</span>
-              <span className="font-mono text-[11px] text-zinc-500">{code.split('\n').length} lines</span>
+        <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-3 px-7 pb-7 overflow-hidden">
+          <div className="flex flex-col rounded-2xl wise-well overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 text-[11px] uppercase tracking-[0.12em] text-ink-faint">
+              <span>Source</span>
+              <span className="font-mono tracking-normal normal-case">{code.split('\n').length} lines</span>
             </div>
-            <pre className="flex-1 p-4 overflow-auto font-mono text-xs text-purple-200 leading-relaxed">
+            <pre className="flex-1 px-4 pb-4 overflow-auto font-mono text-[12px] text-ink-soft leading-[1.7]">
               <code>{code}</code>
             </pre>
           </div>
 
-          <div className="flex flex-col bg-[#07080c] overflow-hidden">
-            <div className="px-4 py-2 bg-zinc-900/60 border-b border-zinc-800/80 text-xs font-semibold text-zinc-400 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+          <div className="flex flex-col rounded-2xl wise-well overflow-hidden">
+            <div className="flex items-center gap-1 px-3 py-2.5">
+              <button
+                onClick={() => setActiveTab('console')}
+                className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+                  activeTab === 'console' ? 'bg-white/[0.07] text-ink' : 'text-ink-faint hover:text-ink-soft'
+                }`}
+              >
+                Console
+              </button>
+              {isHtml && (
                 <button
-                  onClick={() => setActiveTab('console')}
-                  className={`px-2.5 py-1 rounded text-xs font-bold ${activeTab === 'console' ? 'bg-zinc-800 text-purple-300' : 'text-zinc-500'}`}
+                  onClick={() => setActiveTab('preview')}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+                    activeTab === 'preview' ? 'bg-white/[0.07] text-ink' : 'text-ink-faint hover:text-ink-soft'
+                  }`}
                 >
-                  Console Output
+                  Preview
                 </button>
-                {isHtml && (
-                  <button
-                    onClick={() => setActiveTab('preview')}
-                    className={`px-2.5 py-1 rounded text-xs font-bold ${activeTab === 'preview' ? 'bg-zinc-800 text-purple-300' : 'text-zinc-500'}`}
-                  >
-                    HTML Live Preview
-                  </button>
-                )}
-              </div>
-              <span className="text-[10px] text-emerald-400 font-mono">STATUS: OK</span>
+              )}
             </div>
 
             {activeTab === 'console' ? (
-              <div className="flex-1 p-4 font-mono text-xs text-emerald-300 bg-[#050608] overflow-auto leading-relaxed">
+              <div className="flex-1 px-4 pb-4 font-mono text-[12px] text-ink-soft overflow-auto leading-[1.7]">
                 <pre>{output}</pre>
               </div>
             ) : (
               <iframe
-                title="Code Preview"
+                title="Code preview"
                 srcDoc={code}
-                className="flex-1 w-full h-full bg-white border-none"
+                className="flex-1 w-full bg-white border-none"
               />
             )}
           </div>

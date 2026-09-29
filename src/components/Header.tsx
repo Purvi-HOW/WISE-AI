@@ -1,119 +1,84 @@
 import React from 'react';
-import { 
-  Settings, 
-  BookOpen, 
-  Menu, 
-  Plus, 
-  Key,
-  ChevronDown
-} from 'lucide-react';
-import type { FallbackStrategy, ApiKeys } from '../types';
+import { Settings2, BookOpen, Menu, PenSquare, Sparkles } from 'lucide-react';
+import type { FallbackStrategy } from '../types';
+import { getModelMode } from '../constants/models';
+import { WiseLockup } from './brand/WiseLogo';
 
 interface HeaderProps {
   fallbackStrategy: FallbackStrategy;
-  setFallbackStrategy: (s: FallbackStrategy) => void;
   openSettings: () => void;
-  openQuickKeys: () => void;
   openToolkit: () => void;
   onNewChat: () => void;
   toggleSidebar: () => void;
-  apiKeys: ApiKeys;
   isGenerating: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   fallbackStrategy,
-  setFallbackStrategy,
   openSettings,
-  openQuickKeys,
   openToolkit,
   onNewChat,
   toggleSidebar,
-  apiKeys
+  isGenerating
 }) => {
-  const keysCount = [
-    apiKeys.alibabaGrok,
-    apiKeys.gemini,
-    apiKeys.openrouter,
-    ...(apiKeys.grokKeysPool || []),
-    ...(apiKeys.geminiKeysPool || []),
-    ...(apiKeys.openrouterKeysPool || [])
-  ].filter(k => k && k.trim()).length;
+  const mode = getModelMode(fallbackStrategy);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-2.5 bg-[#09090b]/90 backdrop-blur-md border-b border-zinc-800/60 text-zinc-100">
-      <div className="flex items-center space-x-3">
-        <button 
-          onClick={toggleSidebar}
-          className="p-1.5 text-zinc-400 hover:text-zinc-100 rounded-md hover:bg-zinc-800/60 transition-colors md:hidden"
-          title="Toggle Sidebar"
-        >
-          <Menu className="w-4 h-4" />
-        </button>
-
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span className="font-semibold text-sm tracking-tight text-zinc-100">
-            Wise AI
-          </span>
-          <span className="text-[10px] text-zinc-500 font-mono">v2.5</span>
-        </div>
-      </div>
-
-      <div className="hidden lg:flex items-center space-x-2 bg-zinc-900/60 border border-zinc-800/80 rounded-lg px-2.5 py-1 text-xs">
-        <span className="text-zinc-500 font-medium">Flow:</span>
-        <div className="relative flex items-center">
-          <select
-            value={fallbackStrategy}
-            onChange={(e) => setFallbackStrategy(e.target.value as FallbackStrategy)}
-            className="bg-transparent text-zinc-300 font-medium appearance-none pr-4 focus:outline-none cursor-pointer hover:text-zinc-100 text-xs"
-          >
-            <option value="auto" className="bg-zinc-900 text-zinc-200">3-Tier Fallback (Auto)</option>
-            <option value="sequential-rotation" className="bg-zinc-900 text-zinc-200">Sequential Round-Robin Rotation</option>
-            <option value="alibaba-grok-only" className="bg-zinc-900 text-zinc-200">Alibaba Grok (Qwen)</option>
-            <option value="gemini-only" className="bg-zinc-900 text-zinc-200">Google Gemini AI</option>
-            <option value="openrouter-only" className="bg-zinc-900 text-zinc-200">OpenRouter AI</option>
-          </select>
-          <ChevronDown className="w-3 h-3 text-zinc-500 pointer-events-none absolute right-0" />
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-2">
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 md:px-8 py-4 bg-canvas/70 backdrop-blur-xl">
+      <div className="flex items-center gap-3 min-w-0">
         <button
-          onClick={openQuickKeys}
-          className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 transition-all"
-          title="Direct Frontend API Key Manager & Live Test"
+          onClick={toggleSidebar}
+          className="p-2 -ml-1 text-ink-muted hover:text-ink rounded-xl hover:bg-white/[0.05] transition-colors md:hidden"
+          aria-label="Toggle sidebar"
         >
-          <Key className="w-3.5 h-3.5 text-zinc-400" />
-          <span>API Keys</span>
-          {keysCount > 0 && (
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 ml-0.5" />
-          )}
+          <Menu className="w-5 h-5" />
         </button>
 
+        <WiseLockup size="sm" />
+      </div>
+
+      {/* The only thing the main UI says about routing: it is handled. */}
+      <button
+        onClick={openSettings}
+        title="Model selection — change in Advanced settings"
+        className="hidden sm:flex items-center gap-2.5 rounded-full pl-3 pr-4 py-2 wise-panel-flat text-left"
+      >
+        <span className="relative flex items-center justify-center w-5 h-5">
+          {isGenerating && (
+            <span className="absolute inset-0 rounded-full bg-accent/25 animate-ping" />
+          )}
+          <Sparkles className="relative w-3.5 h-3.5 text-accent-soft" />
+        </span>
+        <span className="flex flex-col leading-none">
+          <span className="text-[13px] font-medium text-ink">{mode.label}</span>
+          <span className="text-[11px] text-ink-muted mt-1">{mode.hint}</span>
+        </span>
+      </button>
+
+      <div className="flex items-center gap-2">
         <button
           onClick={openToolkit}
-          className="flex items-center space-x-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900/80 border border-zinc-800 rounded-lg hover:bg-zinc-800 transition-all"
-          title="CS Toolkit & Cheat Sheets"
+          className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-ink-soft hover:text-ink wise-panel-flat"
+          title="Study toolkit and reference sheets"
         >
-          <BookOpen className="w-3.5 h-3.5 text-zinc-400" />
-          <span className="hidden sm:inline">Toolkit</span>
+          <BookOpen className="w-4 h-4" />
+          <span className="hidden lg:inline">Toolkit</span>
         </button>
 
         <button
           onClick={onNewChat}
-          className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white rounded-lg transition-all shadow-sm"
+          className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-ink-soft hover:text-ink wise-panel-flat"
         >
-          <Plus className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">New Chat</span>
+          <PenSquare className="w-4 h-4" />
+          <span className="hidden lg:inline">New chat</span>
         </button>
 
         <button
           onClick={openSettings}
-          className="p-1.5 text-zinc-400 hover:text-zinc-100 rounded-lg hover:bg-zinc-800/80 transition-colors"
+          className="p-2.5 rounded-xl text-ink-muted hover:text-ink hover:bg-white/[0.05] transition-colors"
           title="Settings"
         >
-          <Settings className="w-4 h-4" />
+          <Settings2 className="w-[18px] h-[18px]" />
         </button>
       </div>
     </header>

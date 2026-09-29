@@ -188,13 +188,14 @@ export default async function handler(req: any, res: any) {
 
   // Sandbox fallback response if no keys worked
   const firstAttempted = targetProviders[0] || 'gemini';
-  const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || 'Hello';
-  const sandboxText = `[Wise AI Backend Sandbox]\n\nReceived query: "${lastUserMsg}".\n\nNo live API keys were configured on the server. Please add environment variables (GEMINI_API_KEY, ALIBABA_GROK_API_KEY, or OPENROUTER_API_KEY) in your Vercel project settings.`;
+  // Keep this user-facing: the specific env vars belong in the logs, not the chat.
+  console.warn('[Wise AI] No usable API key found. Set GEMINI_API_KEY, ALIBABA_GROK_API_KEY or OPENROUTER_API_KEY.');
+  const sandboxText = `Wise AI is not connected to a model yet, so I cannot answer that.\n\nAdd an API key under **Settings \u2192 Advanced settings** to get started.`;
 
   return res.status(200).json({
     text: sandboxText,
     providerUsed: firstAttempted,
-    providerName: `${firstAttempted === 'alibaba-grok' ? 'Alibaba Grok' : firstAttempted === 'gemini' ? 'Gemini' : 'OpenRouter'} (Backend Sandbox)`,
+    providerName: 'Not connected',
     modelUsed: 'sandbox-mode',
     latencyMs: Date.now() - startTime,
     tokensUsed: 42,

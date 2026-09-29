@@ -1,184 +1,300 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+/*
+  House of Wise — component layer.
+  Soft panels, restrained depth, and the brand gradient used only where the AI acts.
+*/
 
-  &:hover {
-    border-color: var(--accent-border);
+/* ---------------------------------------------------------------- brand ---- */
+
+.wise-gradient-text {
+  background: linear-gradient(115deg, #F7B88C 0%, #E88AA6 34%, #C56BC4 64%, #8B7BD8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The mark carries a faint halo so it reads as lit rather than printed */
+.wise-mark-glow {
+  display: inline-flex;
+  filter: drop-shadow(0 2px 12px rgba(184, 106, 217, 0.3));
+}
+
+.wise-mark-glow-lg {
+  display: inline-flex;
+  filter: drop-shadow(0 6px 34px rgba(184, 106, 217, 0.35));
+}
+
+/* ---------------------------------------------------------------- panels ---- */
+
+/* Depth via a lifted surface and an inner highlight, not a drawn border */
+.wise-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%),
+    var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 14px 36px -14px rgba(0, 0, 0, 0.6);
+}
+
+.wise-panel-flat {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: background 180ms ease, box-shadow 180ms ease;
+}
+
+.wise-panel-flat:hover {
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 10px 26px -16px rgba(0, 0, 0, 0.75);
+}
+
+/* Recessed surfaces: code blocks, sandbox panes, anything that reads as "inside" */
+.wise-well {
+  background: var(--color-well);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.wise-dialog {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.012) 46%),
+    var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 48px 96px -28px rgba(0, 0, 0, 0.85);
+}
+
+/* The sidebar sits a shade below the shell so the conversation reads as the stage */
+.wise-rail {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.32) 100%);
+}
+
+/* -------------------------------------------------------------- composer ---- */
+
+.wise-composer {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%),
+    var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 22px 50px -20px rgba(0, 0, 0, 0.8);
+  transition: box-shadow 240ms ease;
+}
+
+.wise-composer:focus-within {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(184, 106, 217, 0.4),
+    0 0 34px -6px rgba(184, 106, 217, 0.3),
+    0 18px 44px -18px rgba(0, 0, 0, 0.85);
+}
+
+/* The send button is the one true AI action — it gets the full gradient */
+.wise-send {
+  background: linear-gradient(135deg, #E88AA6 0%, #C56BC4 52%, #8B7BD8 100%);
+  color: #16101B;
+  box-shadow:
+    0 2px 10px -2px rgba(184, 106, 217, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: filter 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.wise-send:hover {
+  filter: brightness(1.1);
+  box-shadow:
+    0 4px 18px -2px rgba(184, 106, 217, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.wise-send:active {
+  transform: scale(0.96);
+}
+
+.wise-send-idle {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-ink-faint);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* --------------------------------------------------------------- accents ---- */
+
+.wise-accent-ring {
+  box-shadow:
+    inset 0 0 0 1px rgba(184, 106, 217, 0.32),
+    0 0 24px -8px rgba(184, 106, 217, 0.45);
+}
+
+/* Ambient wash behind the empty state — the only large gradient in the app */
+.wise-aura::before {
+  content: '';
+  position: absolute;
+  inset: -40% -20% auto -20%;
+  height: 70%;
+  background: radial-gradient(58% 58% at 50% 42%, rgba(184, 106, 217, 0.16) 0%, transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* -------------------------------------------------------------- thinking ---- */
+
+.wise-thinking-dot {
+  background: linear-gradient(135deg, #E88AA6, #8B7BD8);
+  animation: wise-pulse 1.4s ease-in-out infinite;
+}
+
+.wise-thinking-dot:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.wise-thinking-dot:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes wise-pulse {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.8);
   }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+  50% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-.hero {
-  position: relative;
+.wise-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-ink-muted) 0%,
+    var(--color-ink) 45%,
+    var(--color-ink-muted) 90%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: wise-shimmer 2.2s linear infinite;
+}
 
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
+@keyframes wise-shimmer {
+  to {
+    background-position: -200% 0;
   }
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
+.wise-fade-in {
+  animation: wise-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
+@keyframes wise-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
+@media (prefers-reduced-motion: reduce) {
+  .wise-fade-in,
+  .wise-shimmer,
+  .wise-thinking-dot {
+    animation: none;
   }
 }
 
-#docs {
-  border-right: 1px solid var(--border);
+/* ----------------------------------------------------------------- prose ---- */
 
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+.wise-prose {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-ink-soft);
 }
 
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+.wise-prose > * + * {
+  margin-top: 1.05em;
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.wise-prose h1,
+.wise-prose h2,
+.wise-prose h3,
+.wise-prose h4 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  margin-top: 1.9em;
 }
 
-.ticks {
-  position: relative;
+.wise-prose h1 { font-size: 1.5em; }
+.wise-prose h2 { font-size: 1.28em; }
+.wise-prose h3 { font-size: 1.1em; }
+
+.wise-prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.wise-prose a {
+  color: var(--color-accent-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(214, 168, 236, 0.4);
+}
+
+.wise-prose ul,
+.wise-prose ol {
+  padding-left: 1.4em;
+}
+
+.wise-prose ul { list-style: disc; }
+.wise-prose ol { list-style: decimal; }
+
+.wise-prose li::marker {
+  color: var(--color-ink-faint);
+}
+
+.wise-prose li + li {
+  margin-top: 0.45em;
+}
+
+.wise-prose blockquote {
+  border-left: 2px solid rgba(184, 106, 217, 0.45);
+  padding-left: 1.1em;
+  color: var(--color-ink-muted);
+  font-style: normal;
+}
+
+.wise-prose table {
   width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
+.wise-prose th,
+.wise-prose td {
+  padding: 0.6em 0.9em;
+  text-align: left;
+  border-bottom: 1px solid var(--color-hairline);
+}
 
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
+.wise-prose th {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.wise-prose hr {
+  border: none;
+  border-top: 1px solid var(--color-hairline);
+  margin: 2em 0;
+}
+
+.wise-prose pre code {
+  font-family: var(--font-mono);
+}
+
+.wise-prose .katex {
+  font-size: 1.04em;
 }

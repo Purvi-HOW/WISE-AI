@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Send, 
-  Paperclip, 
-  X, 
-  Code, 
-  StopCircle, 
-  Terminal, 
-  Cpu,
-  Sparkles
+import {
+  ArrowUp,
+  Paperclip,
+  X,
+  Square,
+  FileCode2,
+  Bug,
+  Braces,
+  Database,
+  FlaskConical
 } from 'lucide-react';
 import type { Attachment } from '../types';
 
@@ -16,6 +17,13 @@ interface ChatInputProps {
   isGenerating: boolean;
   onStopGeneration?: () => void;
 }
+
+const QUICK_ACTIONS = [
+  { icon: Bug, label: 'Debug code', snippet: 'Debug this code and explain the errors:' },
+  { icon: Braces, label: 'Explain algorithm', snippet: 'Explain this algorithm step by step, with time and space complexity:' },
+  { icon: Database, label: 'Optimise SQL', snippet: 'Optimise this SQL query for performance:' },
+  { icon: FlaskConical, label: 'Write tests', snippet: 'Write unit tests covering the edge cases for:' }
+];
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
@@ -30,7 +38,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 180)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 220)}px`;
     }
   }, [text]);
 
@@ -84,113 +92,103 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const quickAction = (snippet: string) => {
     setText(prev => prev ? `${prev}\n\n${snippet}` : snippet);
+    textareaRef.current?.focus();
   };
 
+  const canSend = text.trim().length > 0 || attachments.length > 0;
+
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 pb-4 pt-2">
-      <div className="flex items-center space-x-1.5 overflow-x-auto pb-2 scrollbar-none text-[11px] text-zinc-400">
-        <button
-          onClick={() => quickAction('Debug code and explain errors:')}
-          className="shrink-0 flex items-center space-x-1 px-2.5 py-1 rounded-md bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800/80 text-zinc-300 transition-colors"
-        >
-          <Code className="w-3 h-3 text-zinc-400" />
-          <span>Debug Code</span>
-        </button>
-        <button
-          onClick={() => quickAction('Explain algorithm step-by-step with time complexity:')}
-          className="shrink-0 flex items-center space-x-1 px-2.5 py-1 rounded-md bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800/80 text-zinc-300 transition-colors"
-        >
-          <Sparkles className="w-3 h-3 text-zinc-400" />
-          <span>Explain Algorithm</span>
-        </button>
-        <button
-          onClick={() => quickAction('Optimize SQL query for performance:')}
-          className="shrink-0 flex items-center space-x-1 px-2.5 py-1 rounded-md bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800/80 text-zinc-300 transition-colors"
-        >
-          <Terminal className="w-3 h-3 text-zinc-400" />
-          <span>Optimize SQL</span>
-        </button>
-        <button
-          onClick={() => quickAction('Write unit tests with edge cases for:')}
-          className="shrink-0 flex items-center space-x-1 px-2.5 py-1 rounded-md bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800/80 text-zinc-300 transition-colors"
-        >
-          <Cpu className="w-3 h-3 text-zinc-400" />
-          <span>Unit Tests</span>
-        </button>
-      </div>
+    <div className="w-full px-5 md:px-8 pb-6 pt-2">
+      <div className="max-w-3xl mx-auto space-y-3">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          {QUICK_ACTIONS.map(({ icon: Icon, label, snippet }) => (
+            <button
+              key={label}
+              onClick={() => quickAction(snippet)}
+              className="shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-full text-[12px] font-medium text-ink-muted hover:text-ink wise-panel-flat"
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
 
-      <div className="relative rounded-xl bg-[#121215] border border-zinc-800/80 focus-within:border-zinc-600 transition-all">
-        {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 p-2.5 border-b border-zinc-800/60">
-            {attachments.map(att => (
-              <div key={att.id} className="flex items-center space-x-1.5 px-2 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-xs text-zinc-300">
-                <Code className="w-3 h-3 text-zinc-400" />
-                <span className="truncate max-w-[140px]">{att.name}</span>
-                <button onClick={() => removeAttachment(att.id)} className="text-zinc-500 hover:text-zinc-300 ml-1">
-                  <X className="w-3 h-3" />
+        <div className="wise-composer rounded-[22px]">
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2 px-4 pt-4">
+              {attachments.map(att => (
+                <div key={att.id} className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-lg bg-white/[0.05] text-[12px] text-ink-soft">
+                  <FileCode2 className="w-3.5 h-3.5 text-ink-faint" />
+                  <span className="truncate max-w-[160px]">{att.name}</span>
+                  <button
+                    onClick={() => removeAttachment(att.id)}
+                    className="text-ink-faint hover:text-ink p-0.5 rounded"
+                    aria-label={`Remove ${att.name}`}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="flex items-end gap-2 p-3">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              multiple
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="p-2.5 text-ink-muted hover:text-ink rounded-xl hover:bg-white/[0.06] transition-colors shrink-0"
+              title="Attach a file"
+            >
+              <Paperclip className="w-[18px] h-[18px]" />
+            </button>
+
+            <textarea
+              ref={textareaRef}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask anything about your code, proofs, or systems…"
+              rows={1}
+              className="flex-1 max-h-[220px] bg-transparent border-none text-ink text-[15px] px-1 py-2.5 focus:outline-none resize-none placeholder-ink-faint leading-relaxed"
+            />
+
+            <div className="shrink-0 pb-0.5">
+              {isGenerating ? (
+                <button
+                  type="button"
+                  onClick={onStopGeneration}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/[0.08] text-ink hover:bg-white/[0.14] transition-colors"
+                  title="Stop generating"
+                >
+                  <Square className="w-3.5 h-3.5 fill-current" />
                 </button>
-              </div>
-            ))}
-          </div>
-        )}
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!canSend}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                    canSend ? 'wise-send' : 'wise-send-idle cursor-not-allowed'
+                  }`}
+                  title="Send"
+                >
+                  <ArrowUp className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex items-end p-2">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileUpload}
-            multiple
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="p-2 text-zinc-400 hover:text-zinc-200 rounded-lg hover:bg-zinc-800/60 transition-colors shrink-0"
-            title="Attach file"
-          >
-            <Paperclip className="w-4 h-4" />
-          </button>
-
-          <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Send a message..."
-            rows={1}
-            className="flex-1 max-h-[180px] bg-transparent border-none text-zinc-100 text-sm px-2 py-1.5 focus:outline-none resize-none placeholder-zinc-500 font-sans leading-relaxed"
-          />
-
-          <div className="flex items-center space-x-1 shrink-0">
-            {isGenerating ? (
-              <button
-                type="button"
-                onClick={onStopGeneration}
-                className="p-1.5 text-zinc-400 hover:text-zinc-100 rounded-lg bg-zinc-800 transition-all"
-                title="Stop generation"
-              >
-                <StopCircle className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={!text.trim() && attachments.length === 0}
-                className={`p-1.5 rounded-lg transition-all ${
-                  text.trim() || attachments.length > 0
-                    ? 'bg-zinc-100 text-zinc-950 hover:bg-white cursor-pointer'
-                    : 'bg-zinc-800/60 text-zinc-600 cursor-not-allowed'
-                }`}
-              >
-                <Send className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </form>
+        <p className="text-[11px] text-center text-ink-faint">
+          Wise AI can make mistakes. Check anything that matters.
+        </p>
       </div>
-
-      <p className="text-[10px] text-center text-zinc-500 mt-2">
-        Wise AI • Multi-LLM interface for Computer Science
-      </p>
     </div>
   );
 };
